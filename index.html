@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lightweight PDF Merger</title>
+    <meta name="description" content="Merge multiple PDFs in your browser. No upload. Fast, private, and lightweight." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="container">
+        <h1>Lightweight PDF Merger</h1>
+        <p class="tagline">All in your browser • No uploads • Fast and private</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="uploader" aria-label="PDF uploader">
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Add PDF files via click or drag-and-drop">
+          <div class="dz-content">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 5 17 10"/><line x1="12" y1="5" x2="12" y2="21"/></svg>
+            <div>
+              <p class="dz-title">Drop PDFs here</p>
+              <p class="dz-sub">or click to choose files</p>
+            </div>
+          </div>
+          <input id="file-input" class="file-input" type="file" accept="application/pdf" multiple aria-label="Choose PDF files" />
+        </div>
+        <p class="hint">Tip: Reorder with arrows on each card. Remove with the × button.</p>
+      </section>
+
+      <section aria-live="polite" aria-label="Selected files">
+        <div id="cards" class="cards-grid"></div>
+      </section>
+
+      <section class="actions">
+        <button id="merge-btn" class="btn primary" disabled>Merge PDFs</button>
+        <button id="clear-btn" class="btn ghost" disabled>Clear All</button>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div class="container">
+        <small>Made for speed • Works entirely offline after load</small>
+      </div>
+    </footer>
+
+    <!-- pdf-lib (runs in-browser) -->
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="./script.js" type="module"></script>
+
+    <!-- Progress overlay -->
+    <div id="progress-overlay" class="progress-overlay hidden" aria-hidden="true" aria-live="polite">
+      <div class="progress-card">
+        <div class="progress-title">Merging PDFs…</div>
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-fill">
+            <div class="progress-shimmer"></div>
+          </div>
+        </div>
+        <div id="progress-label" class="progress-label">0%</div>
+      </div>
+    </div>
+  </body>
+</html>
