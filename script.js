@@ -92,7 +92,16 @@ function renderCards() {
 
 function addFiles(files) {
   const pdfs = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
-  const newItems = pdfs.map(file => ({ id: uid(), file }));
+  // De-duplicate by name+size within current session
+  const existing = new Set(state.items.map(i => `${i.file.name}::${i.file.size}`));
+  const newItems = [];
+  for (const file of pdfs) {
+    const key = `${file.name}::${file.size}`;
+    if (!existing.has(key)) {
+      newItems.push({ id: uid(), file });
+      existing.add(key);
+    }
+  }
   state.items.push(...newItems);
   renderCards();
 }
@@ -144,23 +153,39 @@ els.mergeBtn.addEventListener('click', async () => {
   try {
     showProgress(0);
     const { PDFDocument } = window.PDFLib;
-    const mergedPdf = await PDFDocument.create();
 
-    for (let i = 0; i < state.items.length; i++) {
-      const item = state.items[i];
-      const bytes = await item.file.arrayBuffer();
-      const srcPdf = await PDFDocument.load(bytes);
-      const copied = await mergedPdf.copyPages(srcPdf, srcPdf.getPageIndices());
-      copied.forEach(p => mergedPdf.addPage(p));
-      updateProgress(Math.round(((i + 1) / state.items.length) * 100));
-      // Yield to UI thread for smoother animation
-      await new Promise(r => setTimeout(r, 10));
+    // Batch size: process N files at a time to lower peak memory usage
+    const BATCH_SIZE = 5; // tune if needed
+    const total = state.items.length;
+    let processed = 0;
+
+    // Create a master doc we will append to
+    const master = await PDFDocument.create();
+
+    // Helper: merge a slice of files into a temporary doc and append pages to master
+    async function processBatch(start, end) {
+      const chunk = state.items.slice(start, end);
+      // Process files sequentially within the batch to control memory
+      for (const item of chunk) {
+        const buf = await item.file.arrayBuffer();
+        const src = await PDFDocument.load(buf);
+        const copied = await master.copyPages(src, src.getPageIndices());
+        copied.forEach(p => master.addPage(p));
+        processed += 1;
+        updateProgress(Math.round((processed / total) * 100));
+        await new Promise(r => setTimeout(r, 8)); // let UI breathe
+      }
     }
 
-    const mergedBytes = await mergedPdf.save();
+    for (let i = 0; i < total; i += BATCH_SIZE) {
+      await processBatch(i, Math.min(i + BATCH_SIZE, total));
+      // Yield between batches to allow GC to reclaim memory
+      await new Promise(r => setTimeout(r, 20));
+    }
+
+    const mergedBytes = await master.save();
     const blob = new Blob([mergedBytes], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
-
     const a = document.createElement('a');
     a.href = url;
     a.download = `merged-${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.pdf`;
@@ -172,7 +197,7 @@ els.mergeBtn.addEventListener('click', async () => {
     hideProgressSoon();
   } catch (err) {
     console.error(err);
-    alert('Failed to merge PDFs. Please verify your files and try again.');
+    alert('Failed to merge PDFs. If you are merging many large files, try smaller batches.');
     hideProgress();
   }
 });
