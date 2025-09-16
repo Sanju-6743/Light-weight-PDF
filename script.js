@@ -131,8 +131,11 @@ els.dropzone.addEventListener('drop', (e) => {
   if (dt && dt.files) addFiles(dt.files);
 });
 
-els.dropzone.addEventListener('click', () => els.fileInput.click());
-els.fileInput.addEventListener('change', (e) => addFiles(e.target.files));
+els.fileInput.addEventListener('change', (e) => {
+  addFiles(e.target.files);
+  // reset input so selecting the same files again fires 'change'
+  e.target.value = '';
+});
 
 els.clearBtn.addEventListener('click', clearAll);
 
