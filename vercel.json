@@ -2,11 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "functions": {
-    "api/*.js": {
-      "runtime": "now-nodejs@1.0.0"
-    }
-  },
+
   "rewrites": [
     {
       "source": "/api/(.*)",
