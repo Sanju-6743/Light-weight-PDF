@@ -1,8 +1,8 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+const { GoogleGenerativeAI } = require('@google/generative-ai')
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST'])
     return res.status(405).end(`Method ${req.method} Not Allowed`)
