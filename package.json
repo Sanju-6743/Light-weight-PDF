@@ -2,7 +2,6 @@
   "name": "light-weight-pdf",
   "version": "1.0.0",
   "description": "A tiny, client-only PDF merger that runs fully in your browser using [pdf-lib]. No server, no uploads. Perfect for Vercel static hosting.",
-  "main": "script.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
