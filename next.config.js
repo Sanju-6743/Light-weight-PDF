@@ -17,6 +17,15 @@ const nextConfig = {
       'pdfjs-dist/build/pdf.worker.min.js': false,
     };
 
+    // Ensure proper module resolution for ES modules
+    config.module.rules.push({
+      test: /\.m?js$/,
+      type: 'javascript/auto',
+      resolve: {
+        fullySpecified: false,
+      },
+    });
+
     return config;
   },
 }
