@@ -1,0 +1,40 @@
+{
+  "name": "light-weight-pdf",
+  "version": "1.0.0",
+  "description": "A tiny, client-only PDF merger that runs fully in your browser using [pdf-lib]. No server, no uploads. Perfect for Vercel static hosting.",
+  "main": "script.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sanju-6743/Light-weight-PDF.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Sanju-6743/Light-weight-PDF/issues"
+  },
+  "homepage": "https://github.com/Sanju-6743/Light-weight-PDF#readme",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.12.2",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.1",
+    "next": "^15.5.3",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.4.149",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.13"
+  }
+}
