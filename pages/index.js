@@ -1,12 +1,7 @@
 import { useState } from 'react'
-import { PDFDocument } from 'pdf-lib'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
-import * as pdfjs from 'pdfjs-dist'
 import axios from 'axios'
-
-// Set PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState('home')
@@ -68,6 +63,9 @@ export default function Home() {
     setProcessing(true)
     setProgress(0)
     try {
+      // Dynamic imports to avoid build-time evaluation
+      const { PDFDocument } = await import('pdf-lib')
+
       if (activeTool === 'merge') {
         const mergedPdf = await PDFDocument.create()
         for (let i = 0; i < files.length; i++) {
@@ -107,11 +105,15 @@ export default function Home() {
           setProgress(((i + 1) / files.length) * 100)
         }
       } else if (activeTool === 'pdf-to-images') {
+        const { getDocument } = await import('pdfjs-dist')
+        const pdfjs = await import('pdfjs-dist/legacy/build/pdf')
+        pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+
         const zip = new JSZip()
         for (let i = 0; i < files.length; i++) {
           const file = files[i]
           const pdfBytes = await file.arrayBuffer()
-          const pdf = await pdfjs.getDocument({ data: pdfBytes }).promise
+          const pdf = await getDocument({ data: pdfBytes }).promise
           const numPages = pdf.numPages
           for (let j = 1; j <= numPages; j++) {
             const page = await pdf.getPage(j)
